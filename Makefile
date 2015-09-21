@@ -5,7 +5,7 @@
 # (GNU make, BSD make, SysV make)
 
 #F_CPU = 7372800
-F_CPU = 16000000
+#F_CPU = 16000000
 
 MCU = atmega2560
 #MCU = atmega128
@@ -16,7 +16,7 @@ FORMAT = ihex
 TARGET = main
 #SRC = src/uart/uart.c src/twi/twimaster.c src/gpio/gpio_lcfg.c src/gpio/gpio.c src/$(TARGET).c
 SRC = src/Os/Os.c src/Os/Os_Lcfg.c src/AVR/uart.c src/$(TARGET).c
-INC=./inc
+INC=-I./inc -I./src/Os -I./src/AVR/
 
 ASRC =
 OPT = s
@@ -37,7 +37,7 @@ DEBUG = stabs
 CSTANDARD = -std=gnu99
 
 # Place -D or -U options here
-CDEFS = -DF_CPU=$(F_CPU)UL
+CDEFS = #-DF_CPU=$(F_CPU)UL
 
 # Place -I options here
 CINCS =
@@ -141,8 +141,8 @@ OBJ = $(SRC:.c=.o) $(ASRC:.S=.o)
 LST = $(ASRC:.S=.lst) $(SRC:.c=.lst)
 
 # Combine all necessary flags and optional flags.
-# Add target processor to flags.
-ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS) -I$(INC)
+# Add target processor to flags
+ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS) $(INC)
 ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 ELFSIZE = $(SIZE) -A $(TARGET).elf; $(SIZE) -C --mcu=$(MCU) $(TARGET).elf
