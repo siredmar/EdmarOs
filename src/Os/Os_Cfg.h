@@ -1,3 +1,16 @@
+/**
+* COPYRIGHT : GNU GPL V2 -
+*
+* This file contains Os related configurations
+*
+* Author: Armin Schlegel
+* based on project eRTK (https://github.com/eRTK/eRTK)
+* Creation date: 2015-09-21
+* Last change: 2015-09-21
+*
+* Moduleversion: 0.0.1
+****************************************************************************** */
+
 #ifndef OS_CFG_H_
 #define OS_CFG_H_
 #include <stddef.h>
@@ -16,7 +29,7 @@
 #define F_CPU       (16000000ul)
 #endif
 
-//#define ERTK_DEBUG                     //gibt ein paar mehr infos zum debugging, kostet aber laufzeit
+//#define OS_DEBUG                     //gibt ein paar mehr infos zum debugging, kostet aber laufzeit
 
 #define OS_FREQUENCY_HZ            (1000u)         //system tick rate in HZ
 
@@ -31,15 +44,15 @@
 //#define IDLELED                        //led in idle task ansteuern oder nichts machen
 
 //ueberwachungsfunktionen
-#define eRTK_STARTUP_MS       (0u)         //solange geben wir allen tasks zusammen zum hochlauf bis wir overload pruefen
-#define eRTK_MAX_OVERLOAD     (0u)         //und dies ist die max. erlaubte zahl an overload phasen bevor deadbeef() aufgerufen wird
+#define OS_STARTUP_MS       (0u)         //solange geben wir allen tasks zusammen zum hochlauf bis wir overload pruefen
+#define OS_MAX_OVERLOAD     (0u)         //und dies ist die max. erlaubte zahl an overload phasen bevor deadbeef() aufgerufen wird
 
 
 #if TARGET_CPU == ATMEGA2560
 #define OS_TIMER_PRESCALER       64ul         //verteiler timer clock
 #define OS_TIMER_PRELOAD ( F_CPU/( OS_TIMER_PRESCALER*OS_FREQUENCY_HZ ) )
 #if (OS_TIMER_PRELOAD>254) /* weil es ein 8 bit timer ist */
-#error eRTK:Systematischer 8 Bit Overflow Fehler im SYSTIMER !
+#error Os:Systematischer 8 Bit Overflow Fehler im SYSTIMER !
 #endif
 #endif
 

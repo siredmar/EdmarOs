@@ -1,9 +1,15 @@
-﻿/*
- * main.c
- *
- * Created: 04.05.2015 07:54:15
- *  Author: er
- */ 
+﻿/**
+* COPYRIGHT : GNU GPL V2 -
+*
+* This file contains the main file of the testbench
+*
+* Author: Armin Schlegel
+* based on project eRTK (https://github.com/eRTK/eRTK)
+* Creation date: 2015-09-21
+* Last change: 2015-09-21
+*
+* Moduleversion: 0.0.1
+****************************************************************************** */
 
 /*
   Dies ist ein Beispiel der Anwendung und ein Test des Betriebssystems auf AVR (atmega256).
@@ -46,11 +52,13 @@
 #include "Os/Os.h"
 #include "Os/Os_Cfg.h"
 
-void tskHighPrio( uint16 param0, void *param1 ) { //prio ist 20
-  while( 1 ) { //kurze aktivitaet auf prio 20 muss alles auf prio 10 sofort unterbrechen
-    Os_SleepMs( 10 );
-   }
- }
+void tskHighPrio( uint16 param0, void *param1 )
+{ //prio ist 20
+    while( 1 )
+    { //kurze aktivitaet auf prio 20 muss alles auf prio 10 sofort unterbrechen
+        Os_SleepMs( 10 );
+    }
+}
 
 //tskUART wird viermal gestartet, param0 ist 0..3
 //es wird derselbe programm code genutzt, anhand des param0 wird UART0..UART3 in jeder task genutzt
@@ -59,44 +67,33 @@ void tskHighPrio( uint16 param0, void *param1 ) { //prio ist 20
 //wird nichts empfangen so gibt es time outs.
 //wird alles empfangen so geht es unverzueglich weiter in der schleife.
 //ist gedacht als belastungstest der taskwechselmechanismen und datenstrukturen.
-void tskUART( uint16 param0, void *param1 ) { //prio ist 10
-  while( 1 ) { //com test
-    char buffer[50];
-    uint8 rec;
-    tUART h=open( UART0+param0 ); //das klappt weil UART0+1=UART1, usw.
-    while( h ) { //bei einer loop back verbindung wird RX mit TX verbunden und es laeuft ohne time out
-      read( h, NULL, 0, 0 ); //clear rx buffer
-      write( h, "1", 1 ); //schreibe ein zeichen auf die leitung
-      rec=read( h, buffer, 1, 100 ); //lies ein zeichen mit 100ms time out
-      write( h, "abcdef", 6 );
-      rec=read( h, buffer, 6, 100 );
-      write( h, "0123456789ABCDEFGHIJ", 20 ); //hier ist der auszugebende string laenger als der interne puffer, es kommt ein spezieller mechanismus zum tragen, der abwartet bis der sendepuffer leer ist
-      rec=read( h, buffer, 16, 100 ); //hier muss timeout entstehen da der empfangspuffer nur auf 16 zeichen eingestellt ist und wir nicht rechtzeitig auslesen koennen bevor ein overflow entsteht
-     }
-   }
- }
-
-//
-////sequenzer liste mit adc mux selektor und scaler fuer die messrate
-//tadc adc_cntrl[ANZ_ADC]={
-//  { .mux=0, .ref=( 1<<REFS0 ), .scaler=10 }, //bei jedem 10ten lauf messen
-//  { .mux=8, .ref=( 1<<REFS0 ), .scaler=1  }  //bei jedem lauf messen
-// };
-
-//void tskADC( uint16 param0, void *param1 ) { //prio ist 15
-//  while( 1 ) { //task wartet bis neue adc messung vorliegt, kanal 0 hat teiler 10 -> 1000/10=100ms datenrate
-//    static char txt[10];
-//    snprintf( txt, sizeof txt, "%u", adc_wait( 0 ) );
-//    eRTK_Sleep_ms( 10 );
-//   }
-// }
+void tskUART( uint16 param0, void *param1 )
+{ //prio ist 10
+    while( 1 )
+    { //com test
+        char buffer[50];
+        uint8 rec;
+        tUART h=open( UART0+param0 ); //das klappt weil UART0+1=UART1, usw.
+        while( h )
+        { //bei einer loop back verbindung wird RX mit TX verbunden und es laeuft ohne time out
+            read( h, NULL, 0, 0 ); //clear rx buffer
+            write( h, "1", 1 ); //schreibe ein zeichen auf die leitung
+            rec=read( h, buffer, 1, 100 ); //lies ein zeichen mit 100ms time out
+            write( h, "abcdef", 6 );
+            rec=read( h, buffer, 6, 100 );
+            write( h, "0123456789ABCDEFGHIJ", 20 ); //hier ist der auszugebende string laenger als der interne puffer, es kommt ein spezieller mechanismus zum tragen, der abwartet bis der sendepuffer leer ist
+            rec=read( h, buffer, 16, 100 ); //hier muss timeout entstehen da der empfangspuffer nur auf 16 zeichen eingestellt ist und wir nicht rechtzeitig auslesen koennen bevor ein overflow entsteht
+        }
+    }
+}
 
 
-int main( void ) {
-  Os_Init();
-  Os_TimerInit();
-//  adc_init();
-  Os_Start();
-  Os_ErrorHook( OS_SYS_UNKNOWN ); //hier duerfen wir nie wieder ankommen, wenn die verwaltungsstrukturen i.O. sind
- }
+int main( void )
+{
+    Os_Init();
+    Os_TimerInit();
+    //  adc_init();
+    Os_Start();
+    Os_ErrorHook( OS_SYS_UNKNOWN ); //hier duerfen wir nie wieder ankommen, wenn die verwaltungsstrukturen i.O. sind
+}
 
